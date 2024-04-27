@@ -1,0 +1,43 @@
+{
+  "manifest_version": 3,
+  "name": "Virtual Workforce Chrome Extension",
+  "version": "1.0",
+  "description": "Automate and enhance user interactions on Medium.com with advanced AI and automation technologies.",
+  "permissions": [
+    "activeTab",
+    "storage",
+    "background",
+    "alarms",
+    "http://*/*",
+    "https://*/*"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": ["https://medium.com/*"],
+      "js": ["contentScript.js"]
+    }
+  ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "images/icon16.png",
+      "48": "images/icon48.png",
+      "128": "images/icon128.png"
+    }
+  },
+  "options_page": "options.html",
+  "icons": {
+    "16": "images/icon16.png",
+    "48": "images/icon48.png",
+    "128": "images/icon128.png"
+  },
+  "web_accessible_resources": [
+    {
+      "resources": ["styles.css"],
+      "matches": ["https://medium.com/*"]
+    }
+  ]
+}

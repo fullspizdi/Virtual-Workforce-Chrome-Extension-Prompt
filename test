@@ -1,0 +1,89 @@
+// This directory contains test files for the Virtual Workforce Chrome Extension.
+// The tests ensure that all components of the extension function as expected.
+
+// Import necessary testing libraries
+const { describe, it, before, after } = require('mocha');
+const { expect } = require('chai');
+const sinon = require('sinon');
+const chrome = require('sinon-chrome');
+
+// Import the scripts to be tested
+const background = require('../background.js');
+const contentScript = require('../contentScript.js');
+const popup = require('../popup.js');
+const options = require('../options.js');
+const analytics = require('../analytics.js');
+const aiIntegration = require('../aiIntegration.js');
+
+describe('Background Script Tests', function() {
+    before(() => {
+        global.chrome = chrome;
+    });
+
+    after(() => {
+        chrome.flush();
+        delete global.chrome;
+    });
+
+    it('should initialize AI and track analytics on startup', function() {
+        sinon.assert.calledOnce(background.initializeAI);
+        sinon.assert.calledOnce(background.trackAnalytics);
+    });
+
+    it('should create an alarm for content posting', function() {
+        sinon.assert.calledWith(chrome.alarms.create, sinon.match.has('name', 'scheduleContentPosting'));
+    });
+
+    it('should handle content posting when alarm triggers', function() {
+        const alarmListener = chrome.alarms.onAlarm.addListener.getCall(0).args[0];
+        alarmListener({ name: 'scheduleContentPosting' });
+        sinon.assert.calledOnce(background.automateContentPosting);
+    });
+});
+
+describe('Content Script Tests', function() {
+    it('should check if the page is a valid Medium page', function() {
+        global.window = { location: { href: 'https://medium.com/@user/p/some-article' } };
+        expect(contentScript.isValidMediumPage()).to.be.true;
+    });
+
+    it('should integrate AI features if the page is valid', function() {
+        sinon.stub(contentScript, 'isValidMediumPage').returns(true);
+        contentScript.enhanceMediumExperience();
+        sinon.assert.calledOnce(contentScript.integrateAIFeatures);
+    });
+});
+
+describe('Popup Script Tests', function() {
+    it('should update status and log when AI is activated', function() {
+        document.body.innerHTML = '<div id="status"></div><textarea id="logs"></textarea>';
+        popup.activateAIButton.click();
+        expect(document.getElementById('status').textContent).to.equal('AI Active');
+        expect(document.getElementById('logs').value.trim()).to.include('AI Activation: success');
+    });
+});
+
+describe('Options Script Tests', function() {
+    it('should save settings correctly', function() {
+        document.body.innerHTML = '<form id="settingsForm"></form>';
+        const fakeEvent = { preventDefault: () => {} };
+        sinon.stub(fakeEvent, 'preventDefault');
+        options.settingsForm.dispatchEvent(new Event('submit'));
+        sinon.assert.calledOnce(fakeEvent.preventDefault);
+        sinon.assert.called(chrome.storage.sync.set);
+    });
+});
+
+describe('AI Integration Tests', function() {
+    it('should correctly initialize OpenAI', function() {
+        expect(aiIntegration.openAIConfig).to.be.an.instanceof(Configuration);
+    });
+});
+
+describe('Analytics Tests', function() {
+    it('should send analytics data when tracking is enabled', function() {
+        sinon.stub(chrome.storage.sync, 'get').yields({ analyticsTracking: true });
+        analytics.trackAnalytics();
+        sinon.assert.calledWith(fetch, sinon.match.string, sinon.match.has('method', 'POST'));
+    });
+});

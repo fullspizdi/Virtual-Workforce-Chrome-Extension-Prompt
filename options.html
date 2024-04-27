@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Virtual Workforce Extension - Settings</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="options-container">
+        <h1>Settings</h1>
+        <form id="settingsForm">
+            <div class="form-group">
+                <label for="aiMode">AI Mode:</label>
+                <select id="aiMode">
+                    <option value="basic">Basic</option>
+                    <option value="advanced">Advanced</option>
+                    <option value="expert">Expert</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="autoPost">Automatic Posting:</label>
+                <input type="checkbox" id="autoPost">
+            </div>
+            <div class="form-group">
+                <label for="scheduleTime">Schedule Time:</label>
+                <input type="time" id="scheduleTime">
+            </div>
+            <div class="form-group">
+                <label for="analyticsTracking">Enable Analytics Tracking:</label>
+                <input type="checkbox" id="analyticsTracking" checked>
+            </div>
+            <button type="submit">Save Settings</button>
+        </form>
+    </div>
+    <script src="options.js"></script>
+</body>
+</html>
